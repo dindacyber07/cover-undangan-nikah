@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Love Letter From Aziz & Dinda</title>
+
+  <!-- Preview saat link dibagikan di WhatsApp -->
+  <meta property="og:title" content="The Wedding of Aziz & Dinda">
+  <meta property="og:description" content="Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara(i) untuk hadir di acara pernikahan kami.">
+  <meta property="og:image" content="bg-cover.png">
+
+  <!-- Google Fonts (Fallback mirip gaya serif klasik & tulisan tangan Singel) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Single+Day&display=swap" rel="stylesheet">
+
+  <style>
+    /* Opsional: Jika kamu punya file font Singel.ttf atau Singel.woff2 di folder GitHub, 
+       kode di bawah otomatis akan memuat font Singel asli */
+    @font-face {
+      font-family: 'SingelCustom';
+      src: url('./Singel.woff2') format('woff2'),
+           url('./Singel.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #3d050a; /* Warna marun gelap di sisi luar layar desktop */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* Kontainer dikunci ke rasio 9:16 (1080x1920) agar posisi tombol & teks presisi */
+    .cover-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 450px;
+      aspect-ratio: 9 / 16;
+      background-image: url('./bg-cover.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 1. TOMBOL BUKA UNDANGAN DI LINGKARAN WAX SEAL EMAS */
+    .seal-button {
+      position: absolute;
+      /* Koordinat pusat wax seal emas pada desain (59% dari atas, tengah horizontal) */
+      top: 59%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 31%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: #4a1216;
+      background: radial-gradient(circle, rgba(255, 243, 200, 0.72) 0%, rgba(218, 178, 92, 0.25) 75%, transparent 100%);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: clamp(11px, 2.8vw, 13px);
+      letter-spacing: 0.8px;
+      line-height: 1.25;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      animation: pulseSeal 2.2s infinite ease-in-out;
+      transition: transform 0.2s ease;
+    }
+
+    .seal-button:hover {
+      transform: translate(-50%, -50%) scale(1.06);
+    }
+
+    .seal-button:active {
+      transform: translate(-50%, -50%) scale(0.96);
+    }
+
+    @keyframes pulseSeal {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(235, 198, 115, 0.55);
+      }
+      50% {
+        box-shadow: 0 0 18px 8px rgba(235, 198, 115, 0.25);
+      }
+    }
+
+    /* 2. TEKS NAMA TAMU UNDANGAN (Setara ukuran 53 pada kanvas 1080x1920) */
+    .guest-name {
+      position: absolute;
+      /* Posisi tepat di bawah tulisan "Kepada Yth Bapak/Ibu/ Saudara(i):" */
+      top: 82.2%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86%;
+      text-align: center;
+      color: #ffffff;
+      /* Font Singel (atau fallback Single Day / Cinzel) dengan skala proporsional 53/1080 */
+      font-family: 'SingelCustom', 'Single Day', 'Cinzel', serif;
+      font-size: clamp(20px, 4.9vw, 23px);
+      font-weight: 600;
+      letter-spacing: 1px;
+      line-height: 1.3;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover-wrapper">
+    <!-- Tombol di dalam lingkaran wax seal emas -->
+    <a id="open-invitation-btn" href="./undangan.html" class="seal-button">
+      Buka<br>Undangan
+    </a>
+
+    <!-- Nama Tamu Dinamis -->
+    <div id="guest-name-display" class="guest-name">
+      Tamu Undangan
+    </div>
+  </div>
+
+  <script>
+    // Ambil parameter ?to= dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawTamu = urlParams.get('to');
+
+    if (rawTamu && rawTamu.trim() !== "") {
+      const namaTamu = rawTamu.trim();
+
+      // Tampilkan nama tamu di bagian bawah amplop
+      document.getElementById('guest-name-display').textContent = namaTamu;
+
+      // Teruskan nama tamu ke halaman undangan.html
+      const btnLink = document.getElementById('open-invitation-btn');
+      btnLink.href = `./undangan.html?to=${encodeURIComponent(namaTamu)}`;
+    }
+  </script>
+
+</body>
+</html>
