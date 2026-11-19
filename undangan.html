@@ -87,15 +87,17 @@
       background-repeat: no-repeat;
     }
 
-    /* Countdown di tengah layar (menyesuaikan posisi pada bg-doa-lokasi.png) */
+    /* Countdown di tengah layar (anti-geser) */
     .countdown-overlay {
       position: absolute;
       top: 44.5%;
-      left: 50%;
-      trans: translateX(-50%);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
       width: 90%;
+      max-width: 400px;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       color: #ffffff;
       text-align: center;
@@ -122,15 +124,16 @@
       text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
     }
 
-    /* Kotak Embed Google Maps di bagian bawah */
+    /* Kotak Embed Google Maps di tengah bawah (anti-geser) */
     .maps-overlay {
       position: absolute;
-      top: 64.5%;
-      left: 50%;
-      trans: translateX(-50%);
-      width: 58%;
-      aspect-ratio: 1.15 / 1;
-      border-radius: 4px;
+      top: 63.5%;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: 78%; /* Diperlebar sedikit agar peta lebih mudah dilihat & digeser */
+      height: 220px;
+      border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
       background: #eee;
