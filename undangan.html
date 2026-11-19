@@ -45,7 +45,7 @@
       animation: spin 6s linear infinite;
     }
     .music-btn.paused { animation-play-state: paused; opacity: 0.75; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spin { 100% { trans: rotate(360deg); } }
 
     /* --- 1. BAGIAN VIDEO 3D MOTION (MENTAL CANVAS) --- */
     .video-section {
@@ -65,7 +65,7 @@
       position: absolute;
       bottom: 18px;
       left: 50%;
-      transform: translateX(-50%);
+      trans: translateX(-50%);
       background: rgba(104, 4, 14, 0.82);
       color: #fff;
       font-size: 12px;
@@ -92,7 +92,7 @@
       position: absolute;
       top: 44.5%;
       left: 50%;
-      transform: translateX(-50%);
+      trans: translateX(-50%);
       width: 90%;
       display: flex;
       justify-content: center;
@@ -127,7 +127,7 @@
       position: absolute;
       top: 64.5%;
       left: 50%;
-      transform: translateX(-50%);
+      trans: translateX(-50%);
       width: 58%;
       aspect-ratio: 1.15 / 1;
       border-radius: 4px;
@@ -541,7 +541,7 @@
       }[tag]));
     }
 
-    form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!SCRIPT_URL.startsWith("http")) {
         alert("URL Google Apps Script belum dipasang di kode HTML.");
@@ -563,11 +563,21 @@
       try {
         await fetch(SCRIPT_URL, {
           method: "POST",
+          mode: "no-cors", // Mencegah blokir CORS dari browser saat mengirim ke Google Sheets
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
           body: JSON.stringify(payload)
         });
+        
         statusMsg.innerText = "Terima kasih! Konfirmasi & ucapan Anda telah tersimpan.";
         document.getElementById('greeting-text').value = "";
-        loadWishes();
+        
+        // Jeda 1,5 detik sebelum memuat ulang dinding ucapan agar Google Sheets selesai menulis data
+        setTimeout(() => {
+          loadWishes();
+        }, 1500);
+        
       } catch (error) {
         statusMsg.innerText = "Terjadi kendala koneksi. Silakan coba lagi.";
       } finally {
