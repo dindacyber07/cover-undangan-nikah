@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Wedding of Aziz & Dinda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #2b0408;
+      color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+    }
+
+    .main-wrapper {
+      width: 100%;
+      max-width: 450px;
+      background-color: #f6f1ea;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* --- TOMBOL MUSIK MELAYANG --- */
+    .music-btn {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background-color: #68040e;
+      color: #ffde59;
+      border: 2px solid #ffde59;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      animation: spin 6s linear infinite;
+    }
+    .music-btn.paused { animation-play-state: paused; opacity: 0.75; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* --- 1. BAGIAN VIDEO 3D MOTION (MENTAL CANVAS) --- */
+    .video-section {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background-color: #000;
+      overflow: hidden;
+    }
+    .video-section video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(104, 4, 14, 0.82);
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 222, 89, 0.5);
+      z-index: 10;
+    }
+
+    /* --- 2. BAGIAN DOA, COUNTDOWN & GOOGLE MAPS (bg-doa-lokasi.jpg) --- */
+    .doa-lokasi-section {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background-image: url('./bg-doa-lokasi.jpg');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+
+    /* Countdown di tengah layar (menyesuaikan posisi pada bg-doa-lokasi.jpg) */
+    .countdown-overlay {
+      position: absolute;
+      top: 44.5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      text-align: center;
+    }
+    .cd-item {
+      flex: 1;
+      border-right: 1.5px solid rgba(255, 255, 255, 0.75);
+      padding: 0 4px;
+    }
+    .cd-item:last-child { border-right: none; }
+    .cd-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(34px, 9.5vw, 44px);
+      font-weight: 400;
+      line-height: 1;
+      display: block;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    }
+    .cd-label {
+      font-size: 11px;
+      margin-top: 8px;
+      display: block;
+      letter-spacing: 0.4px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Kotak Embed Google Maps di bagian bawah */
+    .maps-overlay {
+      position: absolute;
+      top: 64.5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 58%;
+      aspect-ratio: 1.15 / 1;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      background: #eee;
+    }
+    .maps-overlay iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* --- 3. BAGIAN RSVP & KIRIM UCAPAN (Menyerupai Desain bg-rsvp.png) --- */
+    .rsvp-section {
+      background-color: #f6f1ea;
+      padding: 44px 24px 56px;
+    }
+    .rsvp-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .rsvp-header h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f0f0f;
+      margin-bottom: 6px;
+    }
+    .rsvp-header p {
+      font-size: 13.5px;
+      color: #2b2b2b;
+      line-height: 1.4;
+    }
+
+    .rsvp-card {
+      background-color: #ffffff;
+      border: 6px solid #68040e;
+      border-radius: 14px;
+      padding: 24px 20px 28px;
+    }
+    .rsvp-card h3 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: #0f0f0f;
+    }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 8px;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1.2px solid #8c8c8c;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #111;
+      background-color: #fff;
+    }
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #68040e;
+    }
+
+    /* Tombol Pilihan Abu-abu Seperti Desain Canva */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .radio-option input[type="radio"] { display: none; }
+    .radio-option label {
+      display: block;
+      width: 100%;
+      padding: 11px 14px;
+      background-color: #e2e2e2;
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1.5px solid transparent;
+    }
+    .radio-option input[type="radio"]:checked + label {
+      background-color: #68040e;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn-send {
+      width: 100%;
+      padding: 13px;
+      background-color: #ffde59;
+      color: #111111;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: transform 0.15s ease, background-color 0.2s;
+    }
+    .btn-send:hover { background-color: #f7d13b; }
+    .btn-send:active { transform: scale(0.98); }
+    .btn-send:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    .status-msg {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 12px;
+      font-weight: 600;
+      color: #68040e;
+    }
+
+    /* --- 4. DINDING UCAPAN TAMU --- */
+    .wishes-wall {
+      margin-top: 28px;
+    }
+    .wishes-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #68040e;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .wishes-list {
+      max-height: 290px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+    .wish-item {
+      background: #ffffff;
+      border-left: 4px solid #68040e;
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .wish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .wish-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+    }
+    .wish-badge {
+      font-size: 10.5px;
+      padding: 2px 8px;
+      border-radius: 50px;
+      background-color: #f6f1ea;
+      color: #68040e;
+      font-weight: 600;
+    }
+    .wish-text {
+      font-size: 12.5px;
+      color: #3a3a3a;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pemutar Lagu Otomatis -->
+  <audio id="bg-music" loop autoplay>
+    <source src="./musik.mp3" type="audio/mpeg">
+  </audio>
+  <button id="music-toggle" class="music-btn" title="Putar / Jeda Lagu">♫</button>
+
+  <div class="main-wrapper">
+    
+    <!-- 1. VIDEO 3D MOTION LOVE STORY (MENTAL CANVAS) -->
+    <section class="video-section">
+      <video id="story-video" autoplay muted playsinline>
+        <source src="./love-story.mp4" type="video/mp4">
+      </video>
+      <a href="#doa-lokasi" class="scroll-hint">Scroll ke Bawah ↓</a>
+    </section>
+
+    <!-- 2. DOA PENGANTIN, COUNTDOWN & EMBED GOOGLE MAPS -->
+    <section id="doa-lokasi" class="doa-lokasi-section">
+      <!-- Countdown Berjalan -->
+      <div class="countdown-overlay" id="countdown-box">
+        <div class="cd-item">
+          <span class="cd-num" id="cd-days">00</span>
+          <span class="cd-label">Days</span>
+        </div>
+        <div class="cd-item">
+          <span class="cd-num" id="cd-hours">00</span>
+          <span class="cd-label">Hours</span>
+        </div>
+        <div class="cd-item">
+          <span class="cd-num" id="cd-minutes">00</span>
+          <span class="cd-label">Minutes</span>
+        </div>
+        <div class="cd-item">
+          <span class="cd-num" id="cd-seconds">00</span>
+          <span class="cd-label">Seconds</span>
+        </div>
+      </div>
+
+      <!-- Embed Google Maps: Gubug Makan Mang Engking Yani Golf Surabaya -->
+      <div class="maps-overlay">
+        <iframe 
+          src="https://maps.google.com/maps?q=Gubug+Makan+Mang+Engking+Yani+Golf+Surabaya&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </section>
+
+    <!-- 3. FORMULIR RSVP & KIRIM UCAPAN -->
+    <section class="rsvp-section">
+      <div class="rsvp-header">
+        <h2>We’d love to see you</h2>
+        <!-- GANTI batas tanggal konfirmasi di bawah ini -->
+        <p>Please let us know you’ll be joining us<br>by January 20, 2027</p>
+      </div>
+
+      <div class="rsvp-card">
+        <h3>RSVP</h3>
+        <form id="rsvp-form">
+          
+          <!-- Nama Tamu Otomatis dari Cover -->
+          <div class="form-group">
+            <label class="form-label" for="guest-name">Your name</label>
+            <input type="text" id="guest-name" class="form-input" required>
+          </div>
+
+          <!-- Konfirmasi Kehadiran -->
+          <div class="form-group">
+            <label class="form-label">Are you coming?</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="coming-yes" name="kehadiran" value="Hadir" checked>
+                <label for="coming-yes">Absolutely, wouldn't miss it!</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="coming-no" name="kehadiran" value="Tidak Hadir">
+                <label for="coming-no">Can't make it this time.</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Membawa Tamu Pendamping -->
+          <div class="form-group">
+            <label class="form-label">Will you be bringing a guest?</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" id="bring-yes" name="membawa_tamu" value="Ya (+1 Tamu)">
+                <label for="bring-yes">Yes, I'll bring one</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="bring-no" name="membawa_tamu" value="Tidak (Sendiri)" checked>
+                <label for="bring-no">No</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nama Tamu Pendamping -->
+          <div class="form-group">
+            <label class="form-label" for="companion-name">Name of accompanying guest, if any:</label>
+            <input type="text" id="companion-name" class="form-input" placeholder="-">
+          </div>
+
+          <!-- Ucapan & Doa -->
+          <div class="form-group">
+            <label class="form-label" for="greeting-text">Leave a greeting</label>
+            <textarea id="greeting-text" class="form-textarea" rows="3" required placeholder="Tuliskan doa & ucapan untuk kedua mempelai..."></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn-send">Send</button>
+          <p id="form-status" class="status-msg"></p>
+        </form>
+      </div>
+
+      <!-- DINDING UCAPAN TAMU -->
+      <div class="wishes-wall">
+        <div class="wishes-title">Wishes & Prayers</div>
+        <div id="wishes-list" class="wishes-list">
+          <p style="text-align:center; font-size:12.5px; color:#666;">Memuat ucapan...</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // ============================================================
+    // 1. KONFIGURASI UTAMA (SESUAIKAN BAGIAN INI)
+    // ============================================================
+    const TARGET_TANGGAL = "January 28, 2027 09:00:00"; // Ganti tanggal & jam acara
+    const SCRIPT_URL = "TEMPEL_URL_GOOGLE_APPS_SCRIPT_DI_SINI"; // Tempel link /exec dari Google Sheets
+
+    // ============================================================
+    // 2. AUTO-FILL NAMA TAMU DARI HALAMAN COVER (?to=...)
+    // ============================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const namaTamu = urlParams.get('to');
+    const nameInput = document.getElementById('guest-name');
+
+    if (namaTamu && namaTamu.trim() !== "") {
+      nameInput.value = namaTamu.trim();
+    } else {
+      nameInput.value = "Tamu Undangan";
+    }
+
+    // ============================================================
+    // 3. KONTROL LAGU LATAR OTOMATIS
+    // ============================================================
+    const audio = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+
+    function playAudio() {
+      audio.play().then(() => {
+        musicBtn.classList.remove('paused');
+      }).catch(() => {
+        musicBtn.classList.add('paused');
+      });
+    }
+
+    // Coba putar langsung saat halaman dimuat & saat sentuhan pertama
+    window.addEventListener('load', playAudio);
+    document.body.addEventListener('click', function initPlay() {
+      if (audio.paused) playAudio();
+      document.body.removeEventListener('click', initPlay);
+    }, { once: true });
+
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (audio.paused) {
+        audio.play();
+        musicBtn.classList.remove('paused');
+      } else {
+        audio.pause();
+        musicBtn.classList.add('paused');
+      }
+    });
+
+    // ============================================================
+    // 4. COUNTDOWN MENUJU HARI H
+    // ============================================================
+    const targetTime = new Date(TARGET_TANGGAL).getTime();
+
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = targetTime - now;
+
+      if (diff <= 0) {
+        document.getElementById('countdown-box').innerHTML = "<p style='font-size:18px; font-weight:600;'>Hari Bahagia Telah Tiba!</p>";
+        return;
+      }
+
+      document.getElementById('cd-days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+      document.getElementById('cd-hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      document.getElementById('cd-minutes').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      document.getElementById('cd-seconds').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+    }, 1000);
+
+    // ============================================================
+    // 5. KIRIM & MUAT DATA RSVP + UCAPAN KE GOOGLE SHEETS
+    // ============================================================
+    const form = document.getElementById('rsvp-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusMsg = document.getElementById('form-status');
+    const wishesList = document.getElementById('wishes-list');
+
+    async function loadWishes() {
+      if (!SCRIPT_URL.startsWith("http")) {
+        wishesList.innerHTML = "<p style='text-align:center; font-size:12px; color:#777;'>Hubungkan URL Google Apps Script untuk menampilkan ucapan.</p>";
+        return;
+      }
+      try {
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        if (data.length === 0) {
+          wishesList.innerHTML = "<p style='text-align:center; font-size:12.5px; color:#666;'>Jadilah yang pertama memberikan ucapan & doa!</p>";
+          return;
+        }
+        wishesList.innerHTML = data.map(item => `
+          <div class="wish-item">
+            <div class="wish-header">
+              <span class="wish-name">${escapeHTML(item.nama)}</span>
+              <span class="wish-badge">${escapeHTML(item.kehadiran)}</span>
+            </div>
+            <p class="wish-text">${escapeHTML(item.ucapan)}</p>
+          </div>
+        `).join('');
+      } catch (err) {
+        wishesList.innerHTML = "<p style='text-align:center; font-size:12px; color:#666;'>Belum ada ucapan.</p>";
+      }
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!SCRIPT_URL.startsWith("http")) {
+        alert("URL Google Apps Script belum dipasang di kode HTML.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending...";
+      statusMsg.innerText = "";
+
+      const payload = {
+        nama: document.getElementById('guest-name').value.trim(),
+        kehadiran: document.querySelector('input[name="kehadiran"]:checked').value,
+        membawa_tamu: document.querySelector('input[name="membawa_tamu"]:checked').value,
+        nama_pendamping: document.getElementById('companion-name').value.trim() || "-",
+        ucapan: document.getElementById('greeting-text').value.trim()
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        statusMsg.innerText = "Terima kasih! Konfirmasi & ucapan Anda telah tersimpan.";
+        document.getElementById('greeting-text').value = "";
+        loadWishes();
+      } catch (error) {
+        statusMsg.innerText = "Terjadi kendala koneksi. Silakan coba lagi.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send";
+      }
+    });
+
+    loadWishes();
+  </script>
+</body>
+</html>
