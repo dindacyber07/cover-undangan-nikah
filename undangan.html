@@ -89,6 +89,18 @@
       display: block;
     }
     
+    /* --- 2B. BAGIAN TANGGAL & TEMPAT (bg-tanggal-tempat.png) --- */
+    .tanggal-tempat-section {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      /* Pastikan ekstensi (.png atau .jpg) sesuai nama file di GitHub */
+      background-image: url('./bg-tanggal-tempat.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      display: block;
+    }
+    
     /* --- 2. BAGIAN DOA, COUNTDOWN & GOOGLE MAPS (bg-doa-lokasi.png) --- */
     .doa-lokasi-section {
       position: relative;
@@ -338,8 +350,12 @@
     <!-- 2. NAMA KEDUA MEMPELAI (bg-mempelai.png) -->
     <section id="mempelai" class="mempelai-section"></section>
     
+    <!-- 2B. JADWAL AKAD & WALIMATUL URSY (bg-tanggal-tempat.png) -->
+    <section id="tanggal-tempat" class="tanggal-tempat-section"></section>
+    
     <!-- 2. DOA PENGANTIN, COUNTDOWN & EMBED GOOGLE MAPS -->
     <section id="doa-lokasi" class="doa-lokasi-section">
+      
       <!-- Countdown Berjalan -->
       <div class="countdown-overlay" id="countdown-box">
         <div class="cd-item">
