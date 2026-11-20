@@ -45,7 +45,7 @@
       animation: spin 6s linear infinite;
     }
     .music-btn.paused { animation-play-state: paused; opacity: 0.75; }
-    @keyframes spin { 100% { trans: rotate(360deg); } }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
     /* --- 1. BAGIAN VIDEO 3D MOTION (MENTAL CANVAS) --- */
     .video-section {
@@ -64,9 +64,11 @@
     .scroll-hint {
       position: absolute;
       bottom: 18px;
-      left: 50%;
-      trans: translateX(-50%);
-      background: rgba(104, 4, 14, 0.82);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: fit-content;
+      background: rgba(104, 4, 14, 0.85);
       color: #fff;
       font-size: 12px;
       padding: 8px 18px;
@@ -82,7 +84,6 @@
       position: relative;
       width: 100%;
       aspect-ratio: 9 / 16;
-      /* Pastikan ekstensi (.png atau .jpg) sesuai nama file di GitHub */
       background-image: url('./bg-mempelai.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
@@ -94,14 +95,13 @@
       position: relative;
       width: 100%;
       aspect-ratio: 9 / 16;
-      /* Pastikan ekstensi (.png atau .jpg) sesuai nama file di GitHub */
       background-image: url('./bg-tanggal-tempat.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       display: block;
     }
     
-    /* --- 2. BAGIAN DOA, COUNTDOWN & GOOGLE MAPS (bg-doa-lokasi.png) --- */
+    /* --- 3. BAGIAN DOA, COUNTDOWN & GOOGLE MAPS (bg-doa-lokasi.png) --- */
     .doa-lokasi-section {
       position: relative;
       width: 100%;
@@ -155,7 +155,7 @@
       left: 0;
       right: 0;
       margin: 0 auto;
-      width: 78%; /* Diperlebar sedikit agar peta lebih mudah dilihat & digeser */
+      width: 78%;
       height: 220px;
       border-radius: 10px;
       overflow: hidden;
@@ -168,7 +168,7 @@
       border: 0;
     }
 
-    /* --- 3. BAGIAN RSVP & KIRIM UCAPAN (Menyerupai Desain bg-rsvp.png) --- */
+    /* --- 4. BAGIAN RSVP & KIRIM UCAPAN --- */
     .rsvp-section {
       background-color: #f6f1ea;
       padding: 44px 24px 56px;
@@ -225,7 +225,6 @@
       border-color: #68040e;
     }
 
-    /* Tombol Pilihan Abu-abu Seperti Desain Canva */
     .radio-group {
       display: flex;
       flex-direction: column;
@@ -277,7 +276,7 @@
       color: #68040e;
     }
 
-    /* --- 4. DINDING UCAPAN TAMU --- */
+    /* --- 5. DINDING UCAPAN TAMU --- */
     .wishes-wall {
       margin-top: 28px;
     }
@@ -344,7 +343,7 @@
       <video id="story-video" autoplay muted playsinline>
         <source src="./love-story.mp4" type="video/mp4">
       </video>
-      <a href="#doa-lokasi" class="scroll-hint">Scroll ke Bawah ↓</a>
+      <a href="#mempelai" class="scroll-hint">Scroll ke Bawah ↓</a>
     </section>
 
     <!-- 2. NAMA KEDUA MEMPELAI (bg-mempelai.png) -->
@@ -353,7 +352,7 @@
     <!-- 2B. JADWAL AKAD & WALIMATUL URSY (bg-tanggal-tempat.png) -->
     <section id="tanggal-tempat" class="tanggal-tempat-section"></section>
     
-    <!-- 2. DOA PENGANTIN, COUNTDOWN & EMBED GOOGLE MAPS -->
+    <!-- 3. DOA PENGANTIN, COUNTDOWN & EMBED GOOGLE MAPS -->
     <section id="doa-lokasi" class="doa-lokasi-section">
       
       <!-- Countdown Berjalan -->
@@ -387,11 +386,10 @@
       </div>
     </section>
 
-    <!-- 3. FORMULIR RSVP & KIRIM UCAPAN -->
+    <!-- 4. FORMULIR RSVP & KIRIM UCAPAN -->
     <section class="rsvp-section">
       <div class="rsvp-header">
         <h2>We’d love to see you</h2>
-        <!-- GANTI batas tanggal konfirmasi di bawah ini -->
         <p>Please let us know you’ll be joining us<br>by January 27, 2028</p>
       </div>
 
@@ -399,10 +397,10 @@
         <h3>RSVP</h3>
         <form id="rsvp-form">
           
-          <!-- Nama Tamu Otomatis dari Cover -->
+          <!-- Nama Tamu Terverifikasi Otomatis dari DaftarTamu -->
           <div class="form-group">
             <label class="form-label" for="guest-name">Your name</label>
-            <input type="text" id="guest-name" class="form-input" required>
+            <input type="text" id="guest-name" class="form-input" required readonly>
           </div>
 
           <!-- Konfirmasi Kehadiran -->
@@ -465,23 +463,45 @@
 
   <script>
     // ============================================================
-    // 1. KONFIGURASI UTAMA (SESUAIKAN BAGIAN INI)
+    // 1. KONFIGURASI UTAMA
     // ============================================================
-    const TARGET_TANGGAL = "January 28, 2028 07:00:00"; // Ganti tanggal & jam acara
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK7iNrdSwKbJZgTfaH1ysZyF5wjlmlJyIGczxv8R9NXNkl4PnM8XnH5g8ULX7f-YeA/exec"; // Tempel link /exec dari Google Sheets
+    const TARGET_TANGGAL = "January 28, 2028 07:00:00";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFDWH96SC02-6vxWI7KhRVyZ2wIGHuwWPxOf4fHpqRE6qAtK0eHpAjQDTwKOmUm7bW/exec";
 
     // ============================================================
-    // 2. AUTO-FILL NAMA TAMU DARI HALAMAN COVER (?to=...)
+    // 2. VERIFIKASI & AUTO-FILL NAMA TAMU DARI GOOGLE SHEETS (?id=...)
     // ============================================================
     const urlParams = new URLSearchParams(window.location.search);
-    const namaTamu = urlParams.get('to');
+    const kodeId = urlParams.get('id');
     const nameInput = document.getElementById('guest-name');
 
-    if (namaTamu && namaTamu.trim() !== "") {
-      nameInput.value = namaTamu.trim();
-    } else {
-      nameInput.value = "Tamu Undangan";
+    async function cekAksesUndangan() {
+      if (!kodeId || kodeId.trim() === "") {
+        alert("Akses tidak valid. Silakan buka undangan melalui tautan resmi yang dibagikan.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      nameInput.value = "Memverifikasi tamu...";
+      nameInput.readOnly = true;
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?id=${encodeURIComponent(kodeId.trim())}`);
+        const data = await res.json();
+
+        if (data.valid && data.nama) {
+          nameInput.value = data.nama;
+          nameInput.style.backgroundColor = "#f4f4f4";
+        } else {
+          alert("Maaf, kode undangan tidak terdaftar dalam daftar tamu.");
+          window.location.href = "index.html";
+        }
+      } catch (err) {
+        alert("Gagal memverifikasi data tamu. Periksa koneksi internet Anda.");
+      }
     }
+
+    cekAksesUndangan();
 
     // ============================================================
     // 3. KONTROL LAGU LATAR OTOMATIS
@@ -492,17 +512,18 @@
     function playAudio() {
       audio.play().then(() => {
         musicBtn.classList.remove('paused');
+        ['click', 'touchstart', 'scroll'].forEach(evt => 
+          window.removeEventListener(evt, playAudio)
+        );
       }).catch(() => {
         musicBtn.classList.add('paused');
       });
     }
 
-    // Coba putar langsung saat halaman dimuat & saat sentuhan pertama
     window.addEventListener('load', playAudio);
-    document.body.addEventListener('click', function initPlay() {
-      if (audio.paused) playAudio();
-      document.body.removeEventListener('click', initPlay);
-    }, { once: true });
+    ['click', 'touchstart', 'scroll'].forEach(evt => 
+      window.addEventListener(evt, playAudio, { passive: true })
+    );
 
     musicBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -544,10 +565,6 @@
     const wishesList = document.getElementById('wishes-list');
 
     async function loadWishes() {
-      if (!SCRIPT_URL.startsWith("http")) {
-        wishesList.innerHTML = "<p style='text-align:center; font-size:12px; color:#777;'>Hubungkan URL Google Apps Script untuk menampilkan ucapan.</p>";
-        return;
-      }
       try {
         const res = await fetch(SCRIPT_URL);
         const data = await res.json();
@@ -575,10 +592,11 @@
       }[tag]));
     }
 
-form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!SCRIPT_URL.startsWith("http")) {
-        alert("URL Google Apps Script belum dipasang di kode HTML.");
+
+      if (nameInput.value === "Memverifikasi tamu..." || nameInput.value.trim() === "") {
+        alert("Tunggu proses verifikasi nama tamu selesai sebelum mengirim.");
         return;
       }
 
@@ -587,7 +605,7 @@ form.addEventListener('submit', async (e) => {
       statusMsg.innerText = "";
 
       const payload = {
-        nama: document.getElementById('guest-name').value.trim(),
+        nama: nameInput.value.trim(),
         kehadiran: document.querySelector('input[name="kehadiran"]:checked').value,
         membawa_tamu: document.querySelector('input[name="membawa_tamu"]:checked').value,
         nama_pendamping: document.getElementById('companion-name').value.trim() || "-",
@@ -597,7 +615,7 @@ form.addEventListener('submit', async (e) => {
       try {
         await fetch(SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors", // Mencegah blokir CORS dari browser saat mengirim ke Google Sheets
+          mode: "no-cors",
           headers: {
             "Content-Type": "text/plain;charset=utf-8"
           },
@@ -607,7 +625,6 @@ form.addEventListener('submit', async (e) => {
         statusMsg.innerText = "Terima kasih! Konfirmasi & ucapan Anda telah tersimpan.";
         document.getElementById('greeting-text').value = "";
         
-        // Jeda 1,5 detik sebelum memuat ulang dinding ucapan agar Google Sheets selesai menulis data
         setTimeout(() => {
           loadWishes();
         }, 1500);
