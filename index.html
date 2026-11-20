@@ -135,21 +135,60 @@
   </div>
 
   <script>
-    // Ambil parameter ?to= dari URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const rawTamu = urlParams.get('to');
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFDWH96SC02-6vxWI7KhRVyZ2wIGHuwWPxOf4fHpqRE6qAtK0eHpAjQDTwKOmUm7bW/exec"; // Tempel link /exec kamu
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const kodeId = urlParams.get('id');
+  
+  // Sesuaikan ID elemen nama tamu & tombol segel emas sesuai kode index.html milikmu
+  const guestDisplay = document.getElementById('guest-name') || document.querySelector('.guest-name');
+  const openBtn = document.getElementById('open-btn') || document.querySelector('.seal-btn, a[href*="undangan.html"]');
 
-    if (rawTamu && rawTamu.trim() !== "") {
-      const namaTamu = rawTamu.trim();
-
-      // Tampilkan nama tamu di bagian bawah amplop
-      document.getElementById('guest-name-display').textContent = namaTamu;
-
-      // Teruskan nama tamu ke halaman undangan.html
-      const btnLink = document.getElementById('open-invitation-btn');
-      btnLink.href = `./undangan.html?to=${encodeURIComponent(namaTamu)}`;
+  async function verifikasiTamu() {
+    if (!kodeId || kodeId.trim() === "") {
+      tampilkanAksesDitolak();
+      return;
     }
-  </script>
+
+    if (guestDisplay) guestDisplay.innerText = "Memuat undangan...";
+    if (openBtn) openBtn.style.pointerEvents = "none";
+
+    try {
+      const res = await fetch(`${SCRIPT_URL}?id=${encodeURIComponent(kodeId.trim())}`);
+      const data = await res.json();
+
+      if (data.valid && data.nama) {
+        if (guestDisplay) guestDisplay.innerText = data.nama;
+        if (openBtn) {
+          openBtn.style.pointerEvents = "auto";
+          // Teruskan parameter ?id= ke halaman undangan.html saat diklik
+          if (openBtn.tagName === 'A') {
+            openBtn.href = `undangan.html?id=${encodeURIComponent(kodeId.trim())}`;
+          } else {
+            openBtn.onclick = () => {
+              window.location.href = `undangan.html?id=${encodeURIComponent(kodeId.trim())}`;
+            };
+          }
+        }
+      } else {
+        tampilkanAksesDitolak();
+      }
+    } catch (err) {
+      if (guestDisplay) guestDisplay.innerText = "Gagal memuat data. Silakan refresh halaman.";
+    }
+  }
+
+  function tampilkanAksesDitolak() {
+    if (guestDisplay) {
+      guestDisplay.innerHTML = "<span style='color:#ffde59; font-size:13px;'>Maaf, tautan undangan tidak valid atau tidak terdaftar.</span>";
+    }
+    if (openBtn) {
+      openBtn.style.display = "none"; // Sembunyikan tombol buka undangan
+    }
+  }
+
+  verifikasiTamu();
+</script>
 
 </body>
 </html>
