@@ -14,8 +14,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Single+Day&display=swap" rel="stylesheet">
 
   <style>
-    /* Opsional: Jika kamu punya file font Singel.ttf atau Singel.woff2 di folder GitHub, 
-       kode di bawah otomatis akan memuat font Singel asli */
     @font-face {
       font-family: 'SingelCustom';
       src: url('./Singel.woff2') format('woff2'),
@@ -31,7 +29,7 @@
     }
 
     body {
-      background-color: #3d050a; /* Warna marun gelap di sisi luar layar desktop */
+      background-color: #3d050a;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -40,7 +38,6 @@
       overflow-x: hidden;
     }
 
-    /* Kontainer dikunci ke rasio 9:16 (1080x1920) agar posisi tombol & teks presisi */
     .cover-wrapper {
       position: relative;
       width: 100%;
@@ -55,14 +52,14 @@
     /* 1. TOMBOL BUKA UNDANGAN DI LINGKARAN WAX SEAL EMAS */
     .seal-button {
       position: absolute;
-      /* Koordinat pusat wax seal emas pada desain (59% dari atas, tengah horizontal) */
       top: 59%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 31%;
       aspect-ratio: 1 / 1;
       border-radius: 50%;
-      display: flex;
+      /* Disembunyikan sementara sampai kode tamu terverifikasi valid */
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -99,17 +96,15 @@
       }
     }
 
-    /* 2. TEKS NAMA TAMU UNDANGAN (Setara ukuran 53 pada kanvas 1080x1920) */
+    /* 2. TEKS NAMA TAMU UNDANGAN */
     .guest-name {
       position: absolute;
-      /* Posisi tepat di bawah tulisan "Kepada Yth Bapak/Ibu/ Saudara(i):" */
       top: 82.2%;
       left: 50%;
       transform: translateX(-50%);
       width: 86%;
       text-align: center;
       color: #ffffff;
-      /* Font Singel (atau fallback Single Day / Cinzel) dengan skala proporsional 53/1080 */
       font-family: 'SingelCustom', 'Single Day', 'Cinzel', serif;
       font-size: clamp(20px, 4.9vw, 23px);
       font-weight: 600;
@@ -130,65 +125,48 @@
 
     <!-- Nama Tamu Dinamis -->
     <div id="guest-name-display" class="guest-name">
-      Tamu Undangan
+      Memuat undangan...
     </div>
   </div>
 
   <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFDWH96SC02-6vxWI7KhRVyZ2wIGHuwWPxOf4fHpqRE6qAtK0eHpAjQDTwKOmUm7bW/exec"; // Tempel link /exec kamu
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const kodeId = urlParams.get('id');
-  
-  // Sesuaikan ID elemen nama tamu & tombol segel emas sesuai kode index.html milikmu
-  const guestDisplay = document.getElementById('guest-name') || document.querySelector('.guest-name');
-  const openBtn = document.getElementById('open-btn') || document.querySelector('.seal-btn, a[href*="undangan.html"]');
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFDWH96SC02-6vxWI7KhRVyZ2wIGHuwWPxOf4fHpqRE6qAtK0eHpAjQDTwKOmUm7bW/exec";
 
-  async function verifikasiTamu() {
-    if (!kodeId || kodeId.trim() === "") {
-      tampilkanAksesDitolak();
-      return;
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const kodeId = urlParams.get('id');
 
-    if (guestDisplay) guestDisplay.innerText = "Memuat undangan...";
-    if (openBtn) openBtn.style.pointerEvents = "none";
+    const guestDisplay = document.getElementById('guest-name-display');
+    const openBtn = document.getElementById('open-invitation-btn');
 
-    try {
-      const res = await fetch(`${SCRIPT_URL}?id=${encodeURIComponent(kodeId.trim())}`);
-      const data = await res.json();
-
-      if (data.valid && data.nama) {
-        if (guestDisplay) guestDisplay.innerText = data.nama;
-        if (openBtn) {
-          openBtn.style.pointerEvents = "auto";
-          // Teruskan parameter ?id= ke halaman undangan.html saat diklik
-          if (openBtn.tagName === 'A') {
-            openBtn.href = `undangan.html?id=${encodeURIComponent(kodeId.trim())}`;
-          } else {
-            openBtn.onclick = () => {
-              window.location.href = `undangan.html?id=${encodeURIComponent(kodeId.trim())}`;
-            };
-          }
-        }
-      } else {
+    async function verifikasiTamu() {
+      if (!kodeId || kodeId.trim() === "") {
         tampilkanAksesDitolak();
+        return;
       }
-    } catch (err) {
-      if (guestDisplay) guestDisplay.innerText = "Gagal memuat data. Silakan refresh halaman.";
-    }
-  }
 
-  function tampilkanAksesDitolak() {
-    if (guestDisplay) {
-      guestDisplay.innerHTML = "<span style='color:#ffde59; font-size:13px;'>Maaf, tautan undangan tidak valid atau tidak terdaftar.</span>";
-    }
-    if (openBtn) {
-      openBtn.style.display = "none"; // Sembunyikan tombol buka undangan
-    }
-  }
+      try {
+        const res = await fetch(`${SCRIPT_URL}?id=${encodeURIComponent(kodeId.trim())}`);
+        const data = await res.json();
 
-  verifikasiTamu();
-</script>
+        if (data.valid && data.nama) {
+          guestDisplay.innerText = data.nama;
+          openBtn.href = `./undangan.html?id=${encodeURIComponent(kodeId.trim())}`;
+          openBtn.style.display = "flex"; // Tampilkan tombol hanya jika kode valid
+        } else {
+          tampilkanAksesDitolak();
+        }
+      } catch (err) {
+        guestDisplay.innerHTML = "<span style='font-family: sans-serif; font-size: 13px; color: #ffde59;'>Gagal memuat data. Silakan refresh halaman.</span>";
+      }
+    }
+
+    function tampilkanAksesDitolak() {
+      guestDisplay.innerHTML = "<span style='font-family: sans-serif; font-size: 13px; font-weight: 500; color: #ffde59; letter-spacing: 0;'>Maaf, tautan undangan tidak valid atau tidak terdaftar.</span>";
+      openBtn.style.display = "none";
+    }
+
+    verifikasiTamu();
+  </script>
 
 </body>
 </html>
